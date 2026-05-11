@@ -42,6 +42,13 @@ class HealthResponse(BaseModel):
     status: Literal["ok"]
 
 
+class RootResponse(BaseModel):
+    service: str
+    status: Literal["ok"]
+    docs: str
+    endpoints: list[str]
+
+
 app = FastAPI(title="SHL Chat API", version="1.0.0")
 
 ROLE_PATTERN = re.compile(
@@ -444,6 +451,16 @@ def _clarification_reply(combined_user_text: str) -> str | None:
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
     return HealthResponse(status="ok")
+
+
+@app.get("/", response_model=RootResponse)
+def root() -> RootResponse:
+    return RootResponse(
+        service="SHL Chat API",
+        status="ok",
+        docs="Use POST /chat with full conversation history in messages.",
+        endpoints=["GET /", "GET /health", "POST /chat"],
+    )
 
 
 @app.post("/chat", response_model=ChatResponse)
